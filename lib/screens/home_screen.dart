@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:pinterest_layout_menu_flutter_app/widgets/menu.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -112,12 +113,22 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
         body: SafeArea(
-      // El contenido a mostrar en la pantalla debe ser scroleable
-      child: SingleChildScrollView(
-        // Animación al llegar al inicio o final del listado (igual que iOS)
-        physics: const BouncingScrollPhysics(),
-        child: PinterestGrid(items),
-      ),
+      // El diseño exige colocar un menú posicionado de forma absoluta en la pantalla (Stack)
+      child: Stack(children: [
+        // El contenido principal a mostrar en la pantalla debe ser scroleable
+        SingleChildScrollView(
+          // Animación al llegar al inicio o final del listado (igual que iOS)
+          physics: const BouncingScrollPhysics(),
+          child: PinterestGrid(items),
+        ),
+        // Menú flotante
+        Positioned(
+          bottom: 15,
+          left: 0,
+          right: 0,
+          child: Menu(),
+        )
+      ]),
     ));
   }
 }
