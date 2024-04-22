@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:pinterest_layout_menu_flutter_app/providers/menu_provider.dart';
 import 'package:pinterest_layout_menu_flutter_app/widgets/menu.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -116,20 +118,96 @@ class HomeScreen extends StatelessWidget {
       // El diseño exige colocar un menú posicionado de forma absoluta en la pantalla (Stack)
       child: Stack(children: [
         // El contenido principal a mostrar en la pantalla debe ser scroleable
-        SingleChildScrollView(
-          // Animación al llegar al inicio o final del listado (igual que iOS)
-          physics: const BouncingScrollPhysics(),
-          child: PinterestGrid(items),
-        ),
+        _PinterestContainer(items: items),
         // Menú flotante
-        Positioned(
-          bottom: 15,
-          left: 0,
-          right: 0,
-          child: Menu(),
-        )
+        const _MenuContainer()
       ]),
     ));
+  }
+}
+
+// Widget contenedor brinda soporte para animación de opacidad, cuando se muestra u oculta
+class _MenuContainer extends StatelessWidget {
+  const _MenuContainer({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Obtener la instancia de mi MenuProvider
+    final menuProvider = Provider.of<MenuProvider>(context);
+
+    return Positioned(
+      bottom: 15,
+      left: 0,
+      right: 0,
+      // AnimatedOpacity anima la opacidad de su hijo de forma suave entre dos valores a lo largo de un período de tiempo determinado.
+      // Este widget es útil cuando deseas realizar transiciones de opacidad animadas en tus interfaces de usuario
+      child: AnimatedOpacity(
+        // Mostrar u ocultar el menú con base en la información almacenada en el estado global de la aplicación
+        opacity: menuProvider.showMenu ? 1 : 0,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInCubic,
+        child: Menu(),
+      ),
+    );
+  }
+}
+
+// Widget contenedor que brinda scrolling al Layout PinterestGrid
+// Tiene que ser con estado ya qie necesito registrar un listener que indique cuando el usuario hace scroll hacia abajo o hacia arribla (para mostrar u ocultar el menú )
+class _PinterestContainer extends StatefulWidget {
+  const _PinterestContainer({
+    super.key,
+    required this.items,
+  });
+
+  final List<Map<String, dynamic>> items;
+
+  @override
+  State<_PinterestContainer> createState() => _PinterestContainerState();
+}
+
+class _PinterestContainerState extends State<_PinterestContainer> {
+  // controlador encargado de la gestión del scroll
+  ScrollController controller = ScrollController();
+  // Propiedad de control para determinar la posición anterior del scroll
+  double offsetOld = 0;
+
+  @override
+  void initState() {
+    // Registrar listener
+    controller.addListener(() {
+      // Determinar la posición actual del scroll
+      if (controller.offset >= 50) {
+        // Mostrar u ocultar el menú respectivamente (scroll hacia abajo oculta, hacia arriba muestra)
+        if (controller.offset > offsetOld) {
+          Provider.of<MenuProvider>(context, listen: false).showMenu = false;
+        } else {
+          Provider.of<MenuProvider>(context, listen: false).showMenu = true;
+        }
+        // Actualizar el scroll anterior
+        offsetOld = controller.offset;
+      }
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      // Animación al llegar al inicio o final del listado (igual que iOS)
+      physics: const BouncingScrollPhysics(),
+      // Registrar controlador para gestionar el scroll en este widget
+      controller: controller,
+      child: PinterestGrid(widget.items),
+    );
   }
 }
 
