@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pinterest_layout_menu_flutter_app/providers/menu_provider.dart';
 import 'package:pinterest_layout_menu_flutter_app/screens/home_screen.dart';
+import 'package:provider/provider.dart';
 
 void main() => runApp(const PinterestLayoutMenuApp());
 
@@ -8,10 +10,14 @@ class PinterestLayoutMenuApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Pinterest Layout Menu',
-      home: HomeScreen(),
+    // Utilizar Provider para adminsitrar el estado global de la aplicacion
+    return ChangeNotifierProvider(
+      create: (_) => MenuProvider(),
+      child: const MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Pinterest Layout Menu',
+        home: HomeScreen(),
+      ),
     );
   }
 }

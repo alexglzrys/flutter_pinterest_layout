@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pinterest_layout_menu_flutter_app/providers/menu_provider.dart';
+import 'package:provider/provider.dart';
 
 // Clase de utilidad para definir o modelar la información que debe contener un botón correspondiente al menú
 class PinterestButton {
@@ -88,7 +90,16 @@ class _MenuItems extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       // Por cada item en el listado de opciones de menú, generar un IconButton con el icono y callback deinido para ese item
-      children: items.map((item) => _MenuButton(item: item)).toList(),
+      // children: items.map((item) => _MenuButton(item: item)).toList(),
+
+      // Por cada item en el listado de opciones de menú, generar un IconButton
+      // Este deberá mostrar el icono y ejecitar el callback deinido para ese item,
+      // Para saber si la opción de menu esta actualmente seleccionada, es necesaria la posición que ocupa ese elemento en la lista
+      // Opción 1
+      // children: items.asMap().map((index, item) => MapEntry(index, _MenuButton(item: item, index: index))).values.toList(),
+      // Opción 2
+      children: List.generate(items.length,
+          (index) => _MenuButton(item: items[index], index: index)),
     );
   }
 }
@@ -98,15 +109,30 @@ class _MenuButton extends StatelessWidget {
   const _MenuButton({
     super.key,
     required this.item,
+    required this.index,
   });
   final PinterestButton item;
+  final int index;
+
   @override
   Widget build(BuildContext context) {
+    // Solicitar la instancia del MenuProvider
+    final menuProvider = Provider.of<MenuProvider>(context);
+
     return IconButton(
-        onPressed: () => item.callback(),
+        onPressed: () {
+          // Especificar el nuevo elemento de menú seleccionado
+          menuProvider.selectedItem = index;
+          // Ejecutar el callback o tareas para esa opción de mení
+          item.callback();
+        },
         icon: Icon(
           item.icon,
-          color: Colors.blueGrey,
+          // Cambiar el color y tamaño del icono en base a si está actualmente seleccionado
+          size: menuProvider.selectedItem == index ? 35 : 25,
+          color: menuProvider.selectedItem == index
+              ? Colors.black
+              : Colors.blueGrey,
         ));
   }
 }
