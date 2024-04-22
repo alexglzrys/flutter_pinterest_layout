@@ -12,7 +12,8 @@ class PinterestLayoutMenuApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // Utilizar Provider para adminsitrar el estado global de la aplicacion
     return ChangeNotifierProvider(
-      create: (_) => MenuProvider(),
+      create: (_) =>
+          MenuProvider(activeColor: Colors.red, deactiveColor: Colors.blueGrey),
       child: const MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Pinterest Layout Menu',

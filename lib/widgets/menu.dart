@@ -131,8 +131,8 @@ class _MenuButton extends StatelessWidget {
           // Cambiar el color y tamaño del icono en base a si está actualmente seleccionado
           size: menuProvider.selectedItem == index ? 35 : 25,
           color: menuProvider.selectedItem == index
-              ? Colors.black
-              : Colors.blueGrey,
+              ? menuProvider.activeColor
+              : menuProvider.deactiveColor,
         ));
   }
 }

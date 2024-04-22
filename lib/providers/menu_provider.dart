@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 class MenuProvider extends ChangeNotifier {
   int _selectedItem = 0;
   bool _showMenu = true;
+  Color activeColor;
+  Color deactiveColor;
+
+  MenuProvider({required this.activeColor, required this.deactiveColor});
 
   int get selectedItem => _selectedItem;
   set selectedItem(int index) {

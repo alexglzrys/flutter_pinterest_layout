@@ -179,16 +179,15 @@ class _PinterestContainerState extends State<_PinterestContainer> {
     // Registrar listener
     controller.addListener(() {
       // Determinar la posición actual del scroll
-      if (controller.offset >= 50) {
-        // Mostrar u ocultar el menú respectivamente (scroll hacia abajo oculta, hacia arriba muestra)
-        if (controller.offset > offsetOld) {
-          Provider.of<MenuProvider>(context, listen: false).showMenu = false;
-        } else {
-          Provider.of<MenuProvider>(context, listen: false).showMenu = true;
-        }
-        // Actualizar el scroll anterior
-        offsetOld = controller.offset;
+
+      // Mostrar u ocultar el menú respectivamente (scroll hacia abajo oculta, hacia arriba muestra)
+      if (controller.offset > offsetOld && controller.offset >= 150) {
+        Provider.of<MenuProvider>(context, listen: false).showMenu = false;
+      } else {
+        Provider.of<MenuProvider>(context, listen: false).showMenu = true;
       }
+      // Actualizar el scroll anterior
+      offsetOld = controller.offset;
     });
     super.initState();
   }
